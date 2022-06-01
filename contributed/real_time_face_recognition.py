@@ -27,16 +27,34 @@ Based on code from https://github.com/shanren7/real_time_face_recognition
 import argparse
 import sys
 import time
+from PIL import Image
 
 import cv2
 
 import face
 
+def store_single_disk(image, label):
+    """ 
+    @author : Guttappa Sajjan
+    Stores a single image as a .png file on disk.
+        Parameters:
+        ---------------
+        image       image array, (32, 32, 3) to be stored
+        label       image label
+    """
+    ts = time.time()
+    st = datetime.fromtimestamp(ts).strftime('%d-%m-%Y_%H-%M-%S')
+    Image.fromarray(image).save(f"{label}_{st}.png")
 
 def add_overlays(frame, faces, frame_rate):
     if faces is not None:
         for face in faces:
             face_bb = face.bounding_box.astype(int)
+            
+            (startX, startY, endX, endY)=face.bounding_box.astype(int)
+            x, y, w, h = [ v for v in face_bb]
+            sub_face = frame[startY:endY, startX:endX]
+            store_single_disk(sub_face, face.name)
             cv2.rectangle(frame,
                           (face_bb[0], face_bb[1]), (face_bb[2], face_bb[3]),
                           (0, 255, 0), 2)
