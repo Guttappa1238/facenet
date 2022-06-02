@@ -85,7 +85,14 @@ def main(args):
     while True:
         # Capture frame-by-frame
         ret, frame = video_capture.read()
-
+        # resizing the frame by percent
+        scale_percent = 60 # percent of original size
+        width = int(frame.shape[1] * scale_percent / 100)
+        height = int(frame.shape[0] * scale_percent / 100)
+        dim = (width, height)
+        # resize image
+        frame = cv2.resize(frame, dim, interpolation = cv2.INTER_AREA)
+        
         if (frame_count % frame_interval) == 0:
             faces = face_recognition.identify(frame)
 
