@@ -1,6 +1,5 @@
 # coding=utf-8
 """Performs face detection in realtime.
-
 Based on code from https://github.com/shanren7/real_time_face_recognition
 """
 # MIT License
@@ -33,8 +32,9 @@ import cv2
 
 import face
 
+
 def store_single_disk(image, label):
-    """ 
+    """
     @author : Guttappa Sajjan
     Stores a single image as a .png file on disk.
         Parameters:
@@ -43,29 +43,48 @@ def store_single_disk(image, label):
         label       image label
     """
     ts = time.time()
-    st = datetime.fromtimestamp(ts).strftime('%d-%m-%Y_%H-%M-%S')
+    st = datetime.fromtimestamp(ts).strftime("%d-%m-%Y_%H-%M-%S")
     Image.fromarray(image).save(f"{label}_{st}.png")
+
 
 def add_overlays(frame, faces, frame_rate):
     if faces is not None:
         for face in faces:
             face_bb = face.bounding_box.astype(int)
-            
-            (startX, startY, endX, endY)=face.bounding_box.astype(int)
-            x, y, w, h = [ v for v in face_bb]
+
+            (startX, startY, endX, endY) = face.bounding_box.astype(int)
+            x, y, w, h = [v for v in face_bb]
             sub_face = frame[startY:endY, startX:endX]
             store_single_disk(sub_face, face.name)
-            cv2.rectangle(frame,
-                          (face_bb[0], face_bb[1]), (face_bb[2], face_bb[3]),
-                          (0, 255, 0), 2)
+            cv2.rectangle(
+                frame,
+                (face_bb[0], face_bb[1]),
+                (face_bb[2], face_bb[3]),
+                (0, 255, 0),
+                2,
+            )
             if face.name is not None:
-                cv2.putText(frame, face.name, (face_bb[0], face_bb[3]),
-                            cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0),
-                            thickness=2, lineType=2)
+                cv2.putText(
+                    frame,
+                    face.name,
+                    (face_bb[0], face_bb[3]),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    1,
+                    (0, 255, 0),
+                    thickness=2,
+                    lineType=2,
+                )
 
-    cv2.putText(frame, str(frame_rate) + " fps", (10, 30),
-                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0),
-                thickness=2, lineType=2)
+    cv2.putText(
+        frame,
+        str(frame_rate) + " fps",
+        (10, 30),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        1,
+        (0, 255, 0),
+        thickness=2,
+        lineType=2,
+    )
 
 
 def main(args):
@@ -86,13 +105,13 @@ def main(args):
         # Capture frame-by-frame
         ret, frame = video_capture.read()
         # resizing the frame by percent
-        scale_percent = 60 # percent of original size
+        scale_percent = 60  # percent of original size
         width = int(frame.shape[1] * scale_percent / 100)
         height = int(frame.shape[0] * scale_percent / 100)
         dim = (width, height)
         # resize image
-        frame = cv2.resize(frame, dim, interpolation = cv2.INTER_AREA)
-        
+        frame = cv2.resize(frame, dim, interpolation=cv2.INTER_AREA)
+
         if (frame_count % frame_interval) == 0:
             faces = face_recognition.identify(frame)
 
@@ -106,9 +125,9 @@ def main(args):
         add_overlays(frame, faces, frame_rate)
 
         frame_count += 1
-        cv2.imshow('Video', frame)
+        cv2.imshow("Video", frame)
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        if cv2.waitKey(1) & 0xFF == ord("q"):
             break
 
     # When everything is done, release the capture
@@ -119,10 +138,12 @@ def main(args):
 def parse_arguments(argv):
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--debug', action='store_true',
-                        help='Enable some debug outputs.')
+    parser.add_argument(
+        "--debug", action="store_true", help="Enable some debug outputs."
+    )
     return parser.parse_args(argv)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(parse_arguments(sys.argv[1:]))
+
