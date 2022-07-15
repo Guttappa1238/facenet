@@ -46,7 +46,23 @@ def store_single_disk(image, label):
     st = datetime.fromtimestamp(ts).strftime("%d-%m-%Y_%H-%M-%S")
     Image.fromarray(image).save(f"{label}_{st}.png")
 
+def mark_attendance(csvData):
+    with open('attendance.csv', 'a') as csvFile:
+        writer = csv.writer(csvFile)
+        writer.writerows(csvData)
+        rows = open('attendance.csv').read().split('\n')                                               
+        newrows = []
+        for row in rows:
+            if row not in newrows:
+                newrows.append(row)
 
+        csvFile = open('FinalAttendance.csv', 'w')
+        csvFile.write('\n'.join(newrows))
+        #csvFile.to_excel ('FinalAttendance.xlsx', index = None, header=True)
+        # df = pd.read_csv('FinalAttendance.csv')
+        # df.to_excel('FinalAttendance.xlsx', sheet_name='gkz', index=True)  # index=True to write row index
+        csvFile.close()
+        
 def add_overlays(frame, faces, frame_rate):
     if faces is not None:
         for face in faces:
@@ -74,6 +90,7 @@ def add_overlays(frame, faces, frame_rate):
                     thickness=2,
                     lineType=2,
                 )
+              
 
     cv2.putText(
         frame,
